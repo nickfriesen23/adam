@@ -16,6 +16,9 @@ function initFactCarousel() {
             fact.style.display = 'none';
         }
     });
+    
+    // Initialize fun comparison tabs
+    initFunComparisonTabs();
 }
 
 // Show next fact
@@ -44,6 +47,7 @@ function initSearch() {
         }
     });
 }
+
 
 // Perform search
 function performSearch() {

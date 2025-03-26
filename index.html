@@ -244,6 +244,115 @@
                         <canvas id="comparison-chart"></canvas>
                     </div>
                 </div>
+                
+                <h2>Fun Comparisons</h2>
+                <div class="fun-comparison-controls">
+                    <div class="fun-compare-type" id="fun-compare-buttons">
+                        <button class="fun-compare-btn active" data-fun-compare="crypto">Cryptocurrency</button>
+                        <button class="fun-compare-btn" data-fun-compare="starTrek">Star Trek</button>
+                        <button class="fun-compare-btn" data-fun-compare="tesla">Tesla</button>
+                        <button class="fun-compare-btn" data-fun-compare="religious">Religious Leaders</button>
+                    </div>
+                </div>
+                
+                <div class="fun-comparison-section" id="crypto-section">
+                    <div class="fun-comparison-row">
+                        <div class="fun-chart-container">
+                            <h3>Bitcoin Price History</h3>
+                            <div class="chart-container">
+                                <canvas id="bitcoin-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="fun-chart-container">
+                            <h3>Ethereum Price History</h3>
+                            <div class="chart-container">
+                                <canvas id="ethereum-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fun-data-table">
+                        <h3>Bitcoin Halving Events</h3>
+                        <table class="fun-table" id="bitcoin-halving-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Block Number</th>
+                                    <th>Block Reward (BTC)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="fun-comparison-section" id="starTrek-section" style="display: none;">
+                    <div class="fun-comparison-row">
+                        <div class="fun-chart-container">
+                            <h3>Star Trek Ship Costs</h3>
+                            <div class="chart-container">
+                                <canvas id="starTrek-ships-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="fun-chart-container">
+                            <h3>Star Trek Actor Salaries</h3>
+                            <div class="chart-container">
+                                <canvas id="starTrek-actors-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fun-comparison-row">
+                        <div class="fun-chart-container">
+                            <h3>Budget Comparison</h3>
+                            <div class="chart-container">
+                                <canvas id="budget-starTrek-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fun-comparison-section" id="tesla-section" style="display: none;">
+                    <div class="fun-comparison-row">
+                        <div class="fun-chart-container">
+                            <h3>Tesla Vehicle Prices</h3>
+                            <div class="chart-container">
+                                <canvas id="tesla-vehicles-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="fun-chart-container">
+                            <h3>Elon Musk Net Worth</h3>
+                            <div class="chart-container">
+                                <canvas id="elon-networth-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fun-comparison-row">
+                        <div class="fun-chart-container">
+                            <h3>Budget Comparison</h3>
+                            <div class="chart-container">
+                                <canvas id="budget-tesla-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fun-comparison-section" id="religious-section" style="display: none;">
+                    <div class="fun-comparison-row">
+                        <div class="fun-chart-container">
+                            <h3>Religious Leaders Annual Earnings</h3>
+                            <div class="chart-container">
+                                <canvas id="religious-earnings-chart"></canvas>
+                            </div>
+                        </div>
+                        <div class="fun-chart-container">
+                            <h3>Religious Leaders Net Worth</h3>
+                            <div class="chart-container">
+                                <canvas id="religious-networth-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -299,12 +408,13 @@
             <p>&copy; 2025 Fiscal Fun with Adam Nesvold. All data is for educational purposes only.</p>
         </div>
     </footer>
-
-    <script src="data.js"></script>
-    <script src="visualizations.js"></script>
-    <script src="tables.js"></script>
-    <script src="ui.js"></script>
-    <script src="charts.js"></script>
-    <script src="app.js"></script>
+<script src="data.js"></script>
+<script src="comparison-data.js"></script>
+<script src="visualizations.js"></script>
+<script src="tables.js"></script>
+<script src="ui.js"></script>
+<script src="charts.js"></script>
+<script src="fun-comparison.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

@@ -336,6 +336,8 @@ main {
     position: relative;
     height: 400px;
     margin-bottom: 1rem;
+    width: 100%;
+    overflow: hidden;
 }
 
 /* Highlights */
@@ -474,7 +476,7 @@ tr:hover {
 }
 
 /* Comparison Controls */
-.comparison-controls {
+.comparison-controls, .fun-comparison-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -498,19 +500,81 @@ tr:hover {
     margin: 0 0.5rem;
 }
 
-.compare-type {
+.compare-type, .fun-compare-type {
     display: flex;
     gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
-.compare-btn {
+.compare-btn, .fun-compare-btn {
     background-color: var(--gray-light);
     color: var(--dark);
 }
 
-.compare-btn.active, .compare-btn:hover {
+.compare-btn.active, .compare-btn:hover,
+.fun-compare-btn.active, .fun-compare-btn:hover {
     background-color: var(--primary);
     color: white;
+}
+
+/* Fun Comparison Sections */
+.fun-comparison-section {
+    margin-top: 2rem;
+}
+
+.fun-comparison-row {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.fun-chart-container {
+    flex: 1;
+    min-width: 300px;
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+}
+
+.fun-chart-container h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-dark);
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.fun-data-table {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+    margin-bottom: 2rem;
+}
+
+.fun-data-table h3 {
+    margin-bottom: 1rem;
+    color: var(--primary-dark);
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.fun-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.fun-table th, .fun-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-light);
+}
+
+.fun-table th {
+    background-color: var(--primary-light);
+    color: white;
+    font-weight: 600;
 }
 
 /* Fun Facts */
@@ -651,6 +715,14 @@ footer {
         gap: 1rem;
     }
     
+    .fun-comparison-row {
+        flex-direction: column;
+    }
+    
+    .fun-chart-container {
+        width: 100%;
+    }
+    
     .hero {
         padding: 3rem 1rem;
     }
@@ -665,9 +737,37 @@ footer {
         align-items: flex-start;
     }
     
+    .visualization-type {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .viz-btn {
+        flex: 1;
+        min-width: 80px;
+        margin: 0.25rem;
+        text-align: center;
+    }
+    
     .comparison-controls {
         flex-direction: column;
         align-items: flex-start;
+    }
+    
+    .compare-type {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .compare-btn {
+        flex: 1;
+        min-width: 80px;
+        margin: 0.25rem;
+        text-align: center;
     }
 }
 
@@ -682,6 +782,29 @@ footer {
     
     .footer-content {
         grid-template-columns: 1fr;
+    }
+    
+    .dashboard {
+        padding: 1rem;
+    }
+    
+    .spending-table-container, .revenue-table-container {
+        font-size: 0.9rem;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+    }
+}
+
+/* Fix for mobile charts */
+@media (max-width: 480px) {
+    .chart-container {
+        height: 250px;
+    }
+    
+    .visualization-container, .spending-breakdown, .revenue-breakdown, .debt-visualization, .comparison-visualization {
+        padding: 1rem;
     }
 }
 

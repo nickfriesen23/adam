@@ -8,19 +8,53 @@ function createTreemap(elementId, data) {
     console.log('createTreemap called with elementId:', elementId, 'and data:', data);
     try {
         // Get the chart container
-        const chartContainer = document.getElementById(elementId).parentElement;
-        console.log('Chart container:', chartContainer);
+        let parentContainer = document.querySelector(`.chart-container:has(#${elementId})`);
+        if (!parentContainer) {
+            // If we can't find the container with the element (it might have been removed),
+            // look for the container directly
+            parentContainer = document.querySelector(`.visualization-container .chart-container`);
+        }
         
-        // Clear previous content
-        chartContainer.innerHTML = '';
-        console.log('Cleared chart container content');
+        if (!parentContainer) {
+            console.error('Chart container not found');
+            return;
+        }
+        console.log('Chart container found:', parentContainer);
+        
+        // Check for existing elements and remove them
+        const existingTreemap = document.getElementById(elementId + '-treemap');
+        const existingBubble = document.getElementById(elementId + '-bubble');
+        
+        if (existingTreemap) {
+            existingTreemap.remove();
+        }
+        
+        if (existingBubble) {
+            existingBubble.remove();
+        }
+        
+        // Clear the container
+        parentContainer.innerHTML = '';
+        
+        // Create a new canvas element for future Chart.js use
+        const canvas = document.createElement('canvas');
+        canvas.id = elementId;
+        parentContainer.appendChild(canvas);
+        
+        if (existingTreemap) {
+            existingTreemap.remove();
+        }
+        
+        if (existingBubble) {
+            existingBubble.remove();
+        }
         
         // Create a new div for the treemap
         const treemapDiv = document.createElement('div');
         treemapDiv.id = elementId + '-treemap';
         treemapDiv.style.width = '100%';
         treemapDiv.style.height = '400px';
-        chartContainer.appendChild(treemapDiv);
+        parentContainer.appendChild(treemapDiv);
         console.log('Created treemap div');
         
         const width = treemapDiv.clientWidth;
@@ -95,19 +129,53 @@ function createBubbleChart(elementId, data) {
     console.log('createBubbleChart called with elementId:', elementId, 'and data:', data);
     try {
         // Get the chart container
-        const chartContainer = document.getElementById(elementId).parentElement;
-        console.log('Chart container:', chartContainer);
+        let parentContainer = document.querySelector(`.chart-container:has(#${elementId})`);
+        if (!parentContainer) {
+            // If we can't find the container with the element (it might have been removed),
+            // look for the container directly
+            parentContainer = document.querySelector(`.visualization-container .chart-container`);
+        }
         
-        // Clear previous content
-        chartContainer.innerHTML = '';
-        console.log('Cleared chart container content');
+        if (!parentContainer) {
+            console.error('Chart container not found');
+            return;
+        }
+        console.log('Chart container found:', parentContainer);
+        
+        // Check for existing elements and remove them
+        const existingTreemap = document.getElementById(elementId + '-treemap');
+        const existingBubble = document.getElementById(elementId + '-bubble');
+        
+        if (existingTreemap) {
+            existingTreemap.remove();
+        }
+        
+        if (existingBubble) {
+            existingBubble.remove();
+        }
+        
+        // Clear the container
+        parentContainer.innerHTML = '';
+        
+        // Create a new canvas element for future Chart.js use
+        const canvas = document.createElement('canvas');
+        canvas.id = elementId;
+        parentContainer.appendChild(canvas);
+        
+        if (existingTreemap) {
+            existingTreemap.remove();
+        }
+        
+        if (existingBubble) {
+            existingBubble.remove();
+        }
         
         // Create a new div for the bubble chart
         const bubbleDiv = document.createElement('div');
         bubbleDiv.id = elementId + '-bubble';
         bubbleDiv.style.width = '100%';
         bubbleDiv.style.height = '400px';
-        chartContainer.appendChild(bubbleDiv);
+        parentContainer.appendChild(bubbleDiv);
         console.log('Created bubble chart div');
         
         const width = bubbleDiv.clientWidth;
