@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiscal Fun with Adam Nesvold - Explore US Government Budget</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo">
+                <i class="fas fa-chart-pie"></i>
+                <span>Fiscal Fun with Adam Nesvold</span>
+            </div>
+            <p class="tagline">Making Budget Data Awesome!</p>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#" class="active" data-view="overview">Overview</a></li>
+                <li><a href="#" data-view="spending">Spending</a></li>
+                <li><a href="#" data-view="revenue">Revenue</a></li>
+                <li><a href="#" data-view="debt">National Debt</a></li>
+                <li><a href="#" data-view="compare">Compare</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="hero">
+        <h1>Explore the US Federal Budget</h1>
+        <p>Discover where your tax dollars go in an interactive, fun way!</p>
+        <div class="search-container">
+            <input type="text" placeholder="Search budget categories...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+
+    <main>
+        <section class="view-controls">
+            <div class="year-selector">
+                <label for="year">Fiscal Year:</label>
+                <select id="year">
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                    <option value="2019">2019</option>
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                </select>
+            </div>
+            <div class="visualization-type">
+                <button class="viz-btn active" data-type="pie"><i class="fas fa-chart-pie"></i> Pie</button>
+                <button class="viz-btn" data-type="bar"><i class="fas fa-chart-bar"></i> Bar</button>
+                <button class="viz-btn" data-type="treemap"><i class="fas fa-th-large"></i> Treemap</button>
+                <button class="viz-btn" data-type="bubble"><i class="fas fa-circle"></i> Bubble</button>
+            </div>
+        </section>
+
+        <section class="dashboard">
+            <div class="view active" id="overview-view">
+                <div class="stats-cards">
+                    <div class="card">
+                        <h3>Total Budget</h3>
+                        <p class="stat">$6.27T</p>
+                        <p class="change increase">+5.2% from previous year</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Revenue</h3>
+                        <p class="stat">$4.64T</p>
+                        <p class="change increase">+3.1% from previous year</p>
+                    </div>
+                    <div class="card">
+                        <h3>Budget Deficit</h3>
+                        <p class="stat">$1.63T</p>
+                        <p class="change decrease">-8.4% from previous year</p>
+                    </div>
+                    <div class="card">
+                        <h3>National Debt</h3>
+                        <p class="stat">$33.7T</p>
+                        <p class="change increase">+6.8% from previous year</p>
+                    </div>
+                </div>
+                
+                <div class="visualization-container">
+                    <h2>Budget Breakdown</h2>
+                    <div class="chart-container">
+                        <canvas id="main-chart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="highlights">
+                    <h2>Budget Highlights</h2>
+                    <div class="highlight-cards">
+                        <div class="highlight-card">
+                            <i class="fas fa-user-shield"></i>
+                            <h3>Defense</h3>
+                            <p>$842B allocated for national defense</p>
+                        </div>
+                        <div class="highlight-card">
+                            <i class="fas fa-heartbeat"></i>
+                            <h3>Healthcare</h3>
+                            <p>$1.7T for Medicare, Medicaid & health</p>
+                        </div>
+                        <div class="highlight-card">
+                            <i class="fas fa-graduation-cap"></i>
+                            <h3>Education</h3>
+                            <p>$79.6B for education programs</p>
+                        </div>
+                        <div class="highlight-card">
+                            <i class="fas fa-road"></i>
+                            <h3>Infrastructure</h3>
+                            <p>$210B for transportation & infrastructure</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view" id="spending-view">
+                <h2>Government Spending</h2>
+                <div class="spending-breakdown">
+                    <div class="chart-container">
+                        <canvas id="spending-chart"></canvas>
+                    </div>
+                    <div class="spending-details">
+                        <div class="spending-table-container">
+                            <table class="spending-table">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th>Amount (Billions)</th>
+                                        <th>% of Budget</th>
+                                        <th>YoY Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="spending-table-body">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view" id="revenue-view">
+                <h2>Government Revenue</h2>
+                <div class="revenue-breakdown">
+                    <div class="chart-container">
+                        <canvas id="revenue-chart"></canvas>
+                    </div>
+                    <div class="revenue-details">
+                        <div class="revenue-table-container">
+                            <table class="revenue-table">
+                                <thead>
+                                    <tr>
+                                        <th>Source</th>
+                                        <th>Amount (Billions)</th>
+                                        <th>% of Revenue</th>
+                                        <th>YoY Change</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="revenue-table-body">
+                                    <!-- Will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view" id="debt-view">
+                <h2>National Debt</h2>
+                <div class="debt-visualization">
+                    <div class="chart-container">
+                        <canvas id="debt-chart"></canvas>
+                    </div>
+                    <div class="debt-metrics">
+                        <div class="metric-card">
+                            <h3>Debt per Citizen</h3>
+                            <p class="metric">$101,240</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Debt to GDP Ratio</h3>
+                            <p class="metric">123.4%</p>
+                        </div>
+                        <div class="metric-card">
+                            <h3>Interest Payments</h3>
+                            <p class="metric">$663B per year</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="debt-history">
+                    <h3>Historical Debt Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="debt-history-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view" id="compare-view">
+                <h2>Budget Comparison</h2>
+                <div class="comparison-controls">
+                    <div class="compare-selector">
+                        <label for="compare-year1">Compare:</label>
+                        <select id="compare-year1">
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                        </select>
+                        <span>vs</span>
+                        <select id="compare-year2">
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                        </select>
+                    </div>
+                    <div class="compare-type">
+                        <button class="compare-btn active" data-compare="spending">Spending</button>
+                        <button class="compare-btn" data-compare="revenue">Revenue</button>
+                        <button class="compare-btn" data-compare="deficit">Deficit</button>
+                    </div>
+                </div>
+                <div class="comparison-visualization">
+                    <div class="chart-container">
+                        <canvas id="comparison-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="fun-facts">
+            <h2>Fun Budget Facts</h2>
+            <div class="fact-carousel">
+                <div class="fact">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>If the US national debt were in $1 bills, it would stretch to the moon and back over 8 times!</p>
+                </div>
+                <div class="fact">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>The US government spends about $2 million per minute!</p>
+                </div>
+                <div class="fact">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>The Pentagon budget is larger than the next 10 countries combined.</p>
+                </div>
+                <div class="controls">
+                    <button class="prev-fact"><i class="fas fa-chevron-left"></i></button>
+                    <button class="next-fact"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Fiscal Fun with Adam Nesvold</h3>
+                <p>Making government budget data accessible, understandable, and fun for everyone!</p>
+            </div>
+            <div class="footer-section">
+                <h3>Data Sources</h3>
+                <ul>
+                    <li>U.S. Treasury Department</li>
+                    <li>Office of Management and Budget</li>
+                    <li>Congressional Budget Office</li>
+                    <li>Federal Reserve Economic Data (FRED)</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Share</h3>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-reddit"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Fiscal Fun with Adam Nesvold. All data is for educational purposes only.</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="visualizations.js"></script>
+    <script src="tables.js"></script>
+    <script src="ui.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
