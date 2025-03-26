@@ -265,7 +265,7 @@ main {
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
-    margin-top: 2rem;
+    margin-top: 3rem; /* Increase top margin to create more space after chart */
     width: 100%;
     max-width: 100%;
 }
@@ -353,15 +353,18 @@ main {
 .chart-container {
     position: relative;
     height: 500px;
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem; /* Increase bottom margin */
     width: 100%;
-    overflow: hidden;
+    overflow: visible; /* Allow chart to be fully visible */
     background-color: var(--chart-bg);
     border: var(--chart-border);
     border-radius: var(--border-radius);
     box-shadow: var(--chart-shadow);
     transition: var(--transition);
-    padding: 1rem 1rem 2rem 1rem;
+    padding: 1rem 1rem 3rem 1rem; /* Increase bottom padding */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .chart-container:hover {
@@ -370,11 +373,17 @@ main {
 }
 
 /* Make sure the chart is responsive */
-canvas#main-chart {
+canvas {
     max-width: 100%;
     height: auto !important;
     margin-bottom: 1rem;
-    transform: translateY(-20px); /* Move chart up a bit */
+}
+
+/* Ensure charts are centered and properly sized */
+.chart-container canvas {
+    display: block !important;
+    margin: 0 auto !important;
+    max-height: 450px !important;
 }
 
 /* Chart Loading Indicators */
@@ -819,8 +828,15 @@ footer {
     }
     
     .chart-container {
-        height: 450px;
-        padding-bottom: 2.5rem;
+        height: 400px;
+        padding-bottom: 2rem;
+        overflow: visible; /* Keep overflow visible to show full chart */
+    }
+    
+    /* Adjust chart size on mobile */
+    .chart-container canvas {
+        max-height: 350px !important;
+        width: 100% !important;
     }
     
     .visualization-type {
@@ -889,8 +905,23 @@ footer {
     }
     
     .chart-container {
-        height: 400px;
-        padding: 0.5rem 0.5rem 2.5rem 0.5rem;
+        height: 350px;
+        padding: 0.5rem 0.5rem 2rem 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Adjust chart size on small mobile */
+    .chart-container canvas {
+        max-height: 300px !important;
+        width: 100% !important;
+    }
+    
+    /* Adjust legend size on small screens */
+    .chart-js-legend li {
+        font-size: 10px;
+        margin-right: 5px;
     }
     
     .footer-content {
@@ -929,8 +960,22 @@ footer {
     }
     
     .chart-container {
-        height: 350px;
-        padding-bottom: 3rem;
+        height: 300px;
+        padding-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Adjust chart size on extra small mobile */
+    .chart-container canvas {
+        max-height: 250px !important;
+        width: 100% !important;
+    }
+    
+    /* Hide some legend items on very small screens */
+    .chart-js-legend li:nth-child(n+5) {
+        display: none;
     }
     
     .visualization-container, .spending-breakdown, .revenue-breakdown, .debt-visualization, .comparison-visualization {

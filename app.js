@@ -17,9 +17,6 @@ function initApp() {
     // Initialize the views
     updateView('overview');
     
-    // Initialize charts
-    initializeCharts();
-    
     // Start the fact carousel
     initFactCarousel();
     
@@ -95,11 +92,47 @@ function updateView(view) {
     // Show the selected view
     document.getElementById(`${view}-view`).classList.add('active');
     
-    // Update charts for the view
-    updateCharts();
+    // Reset chart instances to ensure proper rendering
+    resetChartInstances();
     
-    // Update stats
-    updateStats();
+    // Update charts for the view
+    setTimeout(() => {
+        // Small delay to ensure DOM is updated before rendering charts
+        initializeCharts();
+        
+        // Update stats
+        updateStats();
+    }, 50);
+}
+
+// Reset chart instances to ensure proper rendering when switching views
+function resetChartInstances() {
+    // Destroy existing chart instances to prevent rendering issues
+    for (const key in charts) {
+        if (charts[key]) {
+            try {
+                charts[key].destroy();
+                charts[key] = null;
+            } catch (error) {
+                console.error(`Error destroying chart ${key}:`, error);
+            }
+        }
+    }
+    
+    // Clear any existing chart canvases
+    document.querySelectorAll('.chart-container canvas').forEach(canvas => {
+        const parent = canvas.parentElement;
+        if (parent) {
+            // Store the canvas ID before removing it
+            const canvasId = canvas.id;
+            // Clear the parent container
+            parent.innerHTML = '';
+            // Create a new canvas with the same ID
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = canvasId;
+            parent.appendChild(newCanvas);
+        }
+    });
 }
 
 // Update stats based on current year

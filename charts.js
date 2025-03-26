@@ -70,17 +70,34 @@ function hideLoadingIndicator(containerId) {
 
 // Initialize charts with loading indicators
 function initializeCharts() {
-    // Make sure we don't have any existing chart instances
-    for (const key in charts) {
-        if (charts[key]) {
-            try {
-                charts[key].destroy();
-            } catch (error) {
-                console.error(`Error destroying chart ${key}:`, error);
-            }
-            charts[key] = null;
+    console.log("Initializing charts...");
+    
+    // Reset all chart instances
+    charts = {};
+    
+    // Clear any existing chart canvases to ensure fresh rendering
+    document.querySelectorAll('.chart-container canvas').forEach(canvas => {
+        const parent = canvas.parentElement;
+        if (parent) {
+            const canvasId = canvas.id;
+            parent.innerHTML = '';
+            const newCanvas = document.createElement('canvas');
+            newCanvas.id = canvasId;
+            newCanvas.style.width = '100%';
+            newCanvas.style.maxHeight = '450px';
+            parent.appendChild(newCanvas);
         }
-    }
+    });
+    
+    // Force layout recalculation to ensure containers are properly sized
+    document.querySelectorAll('.chart-container').forEach(container => {
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.height = window.innerWidth <= 480 ? '300px' : '500px';
+        // Force a reflow
+        void container.offsetWidth;
+    });
     
     // Show loading indicators for all chart containers
     showLoadingIndicator('main-chart');
@@ -107,12 +124,22 @@ function initializeCharts() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            layout: {
+                padding: {
+                    top: 10,
+                    right: 20,
+                    bottom: 10,
+                    left: 10
+                }
+            },
             plugins: {
                 legend: {
                     position: 'right',
                     labels: {
+                        boxWidth: 15,
+                        padding: 15,
                         font: {
-                            size: 12
+                            size: window.innerWidth <= 768 ? 10 : 12
                         }
                     }
                 },
@@ -121,8 +148,8 @@ function initializeCharts() {
                         label: function(context) {
                             const label = context.label || '';
                             const value = context.raw;
-                            const percentage = context.dataset.percentages ? 
-                                context.dataset.percentages[context.dataIndex] : 
+                            const percentage = context.dataset.percentages ?
+                                context.dataset.percentages[context.dataIndex] :
                                 (value / context.dataset.data.reduce((a, b) => a + b, 0) * 100).toFixed(1);
                             return `${label}: $${value}B (${percentage}%)`;
                         }
@@ -825,7 +852,7 @@ function initializeFunComparisonCharts() {
 
 // Update charts based on current view and year with loading indicators
 function updateCharts() {
-    const year = parseInt(currentYear);
+    console.log("Updating charts for view:", currentView);
     
     // Show loading indicators for relevant charts based on current view
     if (currentView === 'overview') {
@@ -843,12 +870,70 @@ function updateCharts() {
         showLoadingIndicator('comparison-chart');
     }
     
-    // Update chart types based on current visualization type
-    updateChartTypes();
+    // Ensure chart containers are properly sized and visible
+    optimizeChartContainers();
+    
+    // Add a small delay to ensure DOM is updated before rendering charts
+    setTimeout(() => {
+        // Force a redraw of all chart containers
+        document.querySelectorAll('.chart-container').forEach(container => {
+            // Force a reflow
+            void container.offsetWidth;
+        });
+    }, 50);
+    
+    // Force a redraw after a short delay to ensure charts are properly rendered
+    setTimeout(() => {
+        console.log("Forcing chart redraw...");
+        for (const key in charts) {
+            if (charts[key]) {
+                try {
+                    charts[key].update();
+                } catch (error) {
+                    console.error(`Error updating chart ${key}:`, error);
+                }
+            }
+        }
+    }, 200);
+}
+// Optimize chart containers for proper display
+function optimizeChartContainers() {
+    console.log("Optimizing chart containers...");
+    document.querySelectorAll('.chart-container').forEach(container => {
+        // Make sure container is visible
+        container.style.visibility = 'visible';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
+        container.style.height = window.innerWidth <= 480 ? '300px' : '500px';
+        
+        // Get the canvas element
+        const canvas = container.querySelector('canvas');
+        if (canvas) {
+            // Ensure canvas is properly sized
+            canvas.style.maxWidth = '100%';
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto';
+            
+            // Set appropriate height based on device width
+            if (window.innerWidth <= 480) {
+                canvas.style.maxHeight = '250px';
+            } else if (window.innerWidth <= 576) {
+                canvas.style.maxHeight = '300px';
+            } else if (window.innerWidth <= 768) {
+                canvas.style.maxHeight = '350px';
+            } else {
+                canvas.style.maxHeight = '450px';
+            }
+            
+            // Force a reflow to ensure the canvas is properly sized
+            void canvas.offsetHeight;
+        }
+    });
     
     // Update chart data based on current view
     if (currentView === 'overview' || currentView === 'spending') {
-        const spendingData = BudgetDataProcessor.getSpendingChartData(year);
+        const spendingData = BudgetDataProcessor.getSpendingChartData(parseInt(currentYear));
         
         if (currentView === 'overview' && charts.overview) {
             updateChartData(charts.overview, spendingData);
@@ -859,21 +944,21 @@ function updateCharts() {
             updateChartData(charts.spending, spendingData);
             hideLoadingIndicator('spending-chart');
         }
-        updateSpendingTable(year);
+        updateSpendingTable(parseInt(currentYear));
     }
     
     if (currentView === 'overview' || currentView === 'revenue') {
-        const revenueData = BudgetDataProcessor.getRevenueChartData(year);
+        const revenueData = BudgetDataProcessor.getRevenueChartData(parseInt(currentYear));
         
         if (charts.revenue) {
             updateChartData(charts.revenue, revenueData);
             hideLoadingIndicator('revenue-chart');
         }
-        updateRevenueTable(year);
+        updateRevenueTable(parseInt(currentYear));
     }
     
     if (currentView === 'debt') {
-        const yearData = BudgetDataProcessor.getYearData(year);
+        const yearData = BudgetDataProcessor.getYearData(parseInt(currentYear));
         const debtData = {
             labels: ['National Debt', 'GDP'],
             values: [yearData.overview.nationalDebt, yearData.overview.gdp],
@@ -885,7 +970,7 @@ function updateCharts() {
             hideLoadingIndicator('debt-chart');
         }
         
-        const debtHistoryData = BudgetDataProcessor.getDebtHistoryChartData(year);
+        const debtHistoryData = BudgetDataProcessor.getDebtHistoryChartData(parseInt(currentYear));
         if (charts.debtHistory) {
             charts.debtHistory.data.labels = debtHistoryData.labels;
             charts.debtHistory.data.datasets[0].data = debtHistoryData.values;
@@ -1021,27 +1106,8 @@ function handleChartTypeChange(chartId, chartKey) {
                 const existingTreemap = document.getElementById(`${chartId}-treemap`);
                 const existingBubble = document.getElementById(`${chartId}-bubble`);
                 
-                if (existingTreemap) {
-                    // If we find a treemap, we need to get its parent and clear it
-                    const treeParent = existingTreemap.parentElement;
-                    if (treeParent) {
-                        treeParent.innerHTML = '';
-                    }
-                    // Make sure we have a canvas for Chart.js
-                    const canvas = document.createElement('canvas');
-                    canvas.id = chartId;
-                    parentContainer.appendChild(canvas);
-                } else if (existingBubble) {
-                    // If we find a bubble chart, we need to get its parent and clear it
-                    const bubbleParent = existingBubble.parentElement;
-                    if (bubbleParent) {
-                        bubbleParent.innerHTML = '';
-                    }
-                    // Make sure we have a canvas for Chart.js
-                    const canvas = document.createElement('canvas');
-                    canvas.id = chartId;
-                    parentContainer.appendChild(canvas);
-                }
+                // Clear the parent container
+                parentContainer.innerHTML = '';
                 
                 // Create a new canvas element
                 const canvas = document.createElement('canvas');
@@ -1063,9 +1129,24 @@ function handleChartTypeChange(chartId, chartKey) {
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        layout: {
+                            padding: {
+                                top: 10,
+                                right: 10,
+                                bottom: 10,
+                                left: 10
+                            }
+                        },
                         plugins: {
                             legend: {
-                                position: currentVizType === 'bar' ? 'top' : 'right'
+                                position: currentVizType === 'bar' ? 'top' : 'right',
+                                labels: {
+                                    boxWidth: 12,
+                                    padding: 10,
+                                    font: {
+                                        size: window.innerWidth <= 768 ? 10 : 12
+                                    }
+                                }
                             },
                             tooltip: {
                                 callbacks: {
