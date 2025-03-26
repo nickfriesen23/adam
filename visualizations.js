@@ -3,9 +3,74 @@
  * Visualizations Module - D3.js visualizations
  */
 
-// Create a D3.js treemap visualization
+// Show loading indicator for D3 visualizations
+function showD3LoadingIndicator(containerId) {
+    const container = document.getElementById(containerId).parentElement;
+    
+    // Create loading indicator if it doesn't exist
+    if (!document.getElementById(`${containerId}-d3-loading`)) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = `${containerId}-d3-loading`;
+        loadingDiv.className = 'chart-loading';
+        loadingDiv.innerHTML = `
+            <div class="d3-spinner"></div>
+            <p>Creating visualization...</p>
+        `;
+        loadingDiv.style.position = 'absolute';
+        loadingDiv.style.top = '0';
+        loadingDiv.style.left = '0';
+        loadingDiv.style.width = '100%';
+        loadingDiv.style.height = '100%';
+        loadingDiv.style.display = 'flex';
+        loadingDiv.style.flexDirection = 'column';
+        loadingDiv.style.alignItems = 'center';
+        loadingDiv.style.justifyContent = 'center';
+        loadingDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        loadingDiv.style.zIndex = '10';
+        
+        // Add spinner styles if not already added
+        if (!document.getElementById('d3-spinner-style')) {
+            const style = document.createElement('style');
+            style.id = 'd3-spinner-style';
+            style.textContent = `
+                .d3-spinner {
+                    border: 4px solid rgba(0, 0, 0, 0.1);
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 50%;
+                    border-left-color: #4361ee;
+                    animation: d3spin 1s linear infinite;
+                }
+                
+                @keyframes d3spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        container.style.position = 'relative';
+        container.appendChild(loadingDiv);
+    } else {
+        document.getElementById(`${containerId}-d3-loading`).style.display = 'flex';
+    }
+}
+
+// Hide loading indicator for D3 visualizations
+function hideD3LoadingIndicator(containerId) {
+    const loadingElement = document.getElementById(`${containerId}-d3-loading`);
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+}
+
+// Create a D3.js treemap visualization with loading indicator
 function createTreemap(elementId, data) {
     console.log('createTreemap called with elementId:', elementId, 'and data:', data);
+    
+    // Show loading indicator
+    showD3LoadingIndicator(elementId);
     try {
         // Get the chart container
         let parentContainer = document.querySelector(`.chart-container:has(#${elementId})`);
@@ -119,14 +184,20 @@ function createTreemap(elementId, data) {
             .text(d => `$${d.data.value}B (${d.data.percentage}%)`)
             .attr('font-size', '10px');
         console.log('Value labels added');
+        
+        // Hide loading indicator when treemap is ready
+        hideD3LoadingIndicator(elementId);
     } catch (error) {
         console.error('Error creating treemap:', error);
     }
 }
 
-// Create a D3.js bubble chart
+// Create a D3.js bubble chart with loading indicator
 function createBubbleChart(elementId, data) {
     console.log('createBubbleChart called with elementId:', elementId, 'and data:', data);
+    
+    // Show loading indicator
+    showD3LoadingIndicator(elementId);
     try {
         // Get the chart container
         let parentContainer = document.querySelector(`.chart-container:has(#${elementId})`);
@@ -250,6 +321,9 @@ function createBubbleChart(elementId, data) {
             .text(d => `(${d.data.percentage}%)`)
             .attr('font-size', d => Math.min(d.r / 4, 10) + 'px');
         console.log('Percentage labels added');
+        
+        // Hide loading indicator when bubble chart is ready
+        hideD3LoadingIndicator(elementId);
     } catch (error) {
         console.error('Error creating bubble chart:', error);
     }

@@ -3,7 +3,72 @@
  * Charts Module - Chart initialization and updates
  */
 
-// Initialize charts
+// Global chart configuration
+Chart.defaults.font.family = "'Arial', sans-serif";
+Chart.defaults.color = '#333';
+Chart.defaults.responsive = true;
+Chart.defaults.maintainAspectRatio = false;
+
+// Show loading indicator
+function showLoadingIndicator(containerId) {
+    const container = document.getElementById(containerId).parentElement;
+    
+    // Create loading indicator if it doesn't exist
+    if (!document.getElementById(`${containerId}-loading`)) {
+        const loadingDiv = document.createElement('div');
+        loadingDiv.id = `${containerId}-loading`;
+        loadingDiv.className = 'chart-loading';
+        loadingDiv.innerHTML = `
+            <div class="spinner"></div>
+            <p>Loading chart...</p>
+        `;
+        loadingDiv.style.position = 'absolute';
+        loadingDiv.style.top = '0';
+        loadingDiv.style.left = '0';
+        loadingDiv.style.width = '100%';
+        loadingDiv.style.height = '100%';
+        loadingDiv.style.display = 'flex';
+        loadingDiv.style.flexDirection = 'column';
+        loadingDiv.style.alignItems = 'center';
+        loadingDiv.style.justifyContent = 'center';
+        loadingDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        loadingDiv.style.zIndex = '10';
+        
+        // Add spinner styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .spinner {
+                border: 4px solid rgba(0, 0, 0, 0.1);
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border-left-color: #09f;
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        container.style.position = 'relative';
+        container.appendChild(loadingDiv);
+    } else {
+        document.getElementById(`${containerId}-loading`).style.display = 'flex';
+    }
+}
+
+// Hide loading indicator
+function hideLoadingIndicator(containerId) {
+    const loadingElement = document.getElementById(`${containerId}-loading`);
+    if (loadingElement) {
+        loadingElement.style.display = 'none';
+    }
+}
+
+// Initialize charts with loading indicators
 function initializeCharts() {
     // Make sure we don't have any existing chart instances
     for (const key in charts) {
@@ -17,9 +82,19 @@ function initializeCharts() {
         }
     }
     
-    // Overview chart
-    const overviewCtx = document.getElementById('main-chart').getContext('2d');
-    charts.overview = new Chart(overviewCtx, {
+    // Show loading indicators for all chart containers
+    showLoadingIndicator('main-chart');
+    showLoadingIndicator('spending-chart');
+    showLoadingIndicator('revenue-chart');
+    showLoadingIndicator('debt-chart');
+    showLoadingIndicator('debt-history-chart');
+    showLoadingIndicator('comparison-chart');
+    
+    // Use setTimeout to allow the loading indicators to render before creating charts
+    setTimeout(() => {
+        // Overview chart
+        const overviewCtx = document.getElementById('main-chart').getContext('2d');
+        charts.overview = new Chart(overviewCtx, {
         type: 'pie',
         data: {
             labels: [],
@@ -57,8 +132,11 @@ function initializeCharts() {
         }
     });
     
-    // Spending chart
-    const spendingCtx = document.getElementById('spending-chart').getContext('2d');
+        // Hide loading indicator after chart is created
+        hideLoadingIndicator('main-chart');
+        
+        // Spending chart
+        const spendingCtx = document.getElementById('spending-chart').getContext('2d');
     charts.spending = new Chart(spendingCtx, {
         type: 'pie',
         data: {
@@ -97,8 +175,11 @@ function initializeCharts() {
         }
     });
     
-    // Revenue chart
-    const revenueCtx = document.getElementById('revenue-chart').getContext('2d');
+        // Hide loading indicator after chart is created
+        hideLoadingIndicator('spending-chart');
+        
+        // Revenue chart
+        const revenueCtx = document.getElementById('revenue-chart').getContext('2d');
     charts.revenue = new Chart(revenueCtx, {
         type: 'pie',
         data: {
@@ -137,8 +218,11 @@ function initializeCharts() {
         }
     });
     
-    // Debt chart
-    const debtCtx = document.getElementById('debt-chart').getContext('2d');
+        // Hide loading indicator after chart is created
+        hideLoadingIndicator('revenue-chart');
+        
+        // Debt chart
+        const debtCtx = document.getElementById('debt-chart').getContext('2d');
     charts.debt = new Chart(debtCtx, {
         type: 'doughnut',
         data: {
@@ -172,8 +256,11 @@ function initializeCharts() {
         }
     });
     
-    // Debt history chart
-    const debtHistoryCtx = document.getElementById('debt-history-chart').getContext('2d');
+        // Hide loading indicator after chart is created
+        hideLoadingIndicator('debt-chart');
+        
+        // Debt history chart
+        const debtHistoryCtx = document.getElementById('debt-history-chart').getContext('2d');
     charts.debtHistory = new Chart(debtHistoryCtx, {
         type: 'line',
         data: {
@@ -216,8 +303,11 @@ function initializeCharts() {
         }
     });
     
-    // Comparison chart
-    const comparisonCtx = document.getElementById('comparison-chart').getContext('2d');
+        // Hide loading indicator after chart is created
+        hideLoadingIndicator('debt-history-chart');
+        
+        // Comparison chart
+        const comparisonCtx = document.getElementById('comparison-chart').getContext('2d');
     charts.comparison = new Chart(comparisonCtx, {
         type: 'bar',
         data: {
@@ -268,8 +358,12 @@ function initializeCharts() {
             }
         }
     });
-    // Update charts with initial data
-    updateCharts();
+        // Hide loading indicator after chart is created
+        hideLoadingIndicator('comparison-chart');
+        
+        // Update charts with initial data
+        updateCharts();
+    }, 100); // Small delay to ensure loading indicators are visible
 }
 
 // Initialize fun comparison charts
@@ -729,9 +823,25 @@ function initializeFunComparisonCharts() {
     });
 }
 
-// Update charts based on current view and year
+// Update charts based on current view and year with loading indicators
 function updateCharts() {
     const year = parseInt(currentYear);
+    
+    // Show loading indicators for relevant charts based on current view
+    if (currentView === 'overview') {
+        showLoadingIndicator('main-chart');
+        showLoadingIndicator('spending-chart');
+        showLoadingIndicator('revenue-chart');
+    } else if (currentView === 'spending') {
+        showLoadingIndicator('spending-chart');
+    } else if (currentView === 'revenue') {
+        showLoadingIndicator('revenue-chart');
+    } else if (currentView === 'debt') {
+        showLoadingIndicator('debt-chart');
+        showLoadingIndicator('debt-history-chart');
+    } else if (currentView === 'compare') {
+        showLoadingIndicator('comparison-chart');
+    }
     
     // Update chart types based on current visualization type
     updateChartTypes();
@@ -742,10 +852,12 @@ function updateCharts() {
         
         if (currentView === 'overview' && charts.overview) {
             updateChartData(charts.overview, spendingData);
+            hideLoadingIndicator('main-chart');
         }
         
         if (charts.spending) {
             updateChartData(charts.spending, spendingData);
+            hideLoadingIndicator('spending-chart');
         }
         updateSpendingTable(year);
     }
@@ -755,6 +867,7 @@ function updateCharts() {
         
         if (charts.revenue) {
             updateChartData(charts.revenue, revenueData);
+            hideLoadingIndicator('revenue-chart');
         }
         updateRevenueTable(year);
     }
@@ -769,6 +882,7 @@ function updateCharts() {
         
         if (charts.debt) {
             updateChartData(charts.debt, debtData);
+            hideLoadingIndicator('debt-chart');
         }
         
         const debtHistoryData = BudgetDataProcessor.getDebtHistoryChartData(year);
@@ -776,6 +890,7 @@ function updateCharts() {
             charts.debtHistory.data.labels = debtHistoryData.labels;
             charts.debtHistory.data.datasets[0].data = debtHistoryData.values;
             charts.debtHistory.update();
+            hideLoadingIndicator('debt-history-chart');
         }
         
         // Update debt metrics
@@ -1024,6 +1139,7 @@ function updateComparisonChart() {
         charts.comparison.data.datasets[1].label = year2;
         charts.comparison.data.datasets[1].data = comparisonData.values2;
         charts.comparison.update();
+        hideLoadingIndicator('comparison-chart');
     }
 }
 
